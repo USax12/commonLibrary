@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 
 import com.example.common.exception.CustomException.DuplicateUserException;
 import com.example.common.exception.CustomException.MenuServiceException;
+import com.example.common.exception.CustomException.OrderServiceException;
 import com.example.common.exception.CustomException.UserNotFoundException;
 
 @ControllerAdvice
@@ -34,11 +35,19 @@ public class GlobalExceptionHandler {
 	public ResponseEntity<String> handleException(Exception ex) {
 		return new ResponseEntity<>("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
 	@ExceptionHandler(MenuServiceException.class)
 	public ResponseEntity<Map<String, Object>> handleMenuServiceException(MenuServiceException ex, WebRequest request) {
 
 		Map<String, Object> errorResponse = Collections.singletonMap("error", ex.getMessage());
 		return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(OrderServiceException.class)
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	public ResponseEntity<String> handleOrderServiceException(OrderServiceException e) {
+
+		e.printStackTrace();
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error processing the order: " + e.getMessage());
 	}
 }
